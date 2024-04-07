@@ -97,7 +97,7 @@
     <button class="end">Stop</button>
   </section>
   <section id="myVideos">
-    <h2>Mis videos</h2>
+    <h2 id="title"></h2>
   </section>
 </body>
 
@@ -131,7 +131,7 @@
       const $link = document.createElement("a");
       $link.href = URL.createObjectURL(e.data);
       $link.download = `Captura${videosPrev + 1}.webm`;
-      $link.innerText = `Descargar video ${videosPrev + 1}`;
+      $link.innerText = `Download video ${videosPrev + 1}`;
 
       const $video = document.createElement("video");
       $video.src = $link.href;
@@ -141,7 +141,11 @@
       $card.classList.add("card");
       $card.appendChild($video);
       $card.appendChild($link);
+
       $videosContainer.appendChild($card);
+      if (videosPrev == 0) {
+        document.querySelector("#title").innerText = "My videos";
+      }
     });
   });
 </script>
