@@ -1,0 +1,147 @@
+<style>
+  :root {
+    color-scheme: light dark;
+    --yelow: #f7b93b;
+    --red: #dd4949;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+  * {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+  }
+  button {
+    font-size: 2em;
+    background: #1f1f1f;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #000;
+    cursor: pointer;
+    max-width: 300px;
+  }
+  section {
+    display: grid;
+    place-content: center;
+  }
+  svg {
+    width: 100%;
+    padding: 40px;
+    padding-bottom: 20px;
+    fill: var(--yelow);
+  }
+  .end {
+    margin-top: 10px;
+  }
+  #myVideos {
+    padding: 30px;
+    gap: 15px;
+    & h2 {
+      text-align: center;
+      font-size: 2em;
+    }
+    .card {
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      background: #1f1f1f;
+      box-shadow: 0 0 15px #000;
+      & a {
+        text-align: end;
+        font-size: 1.5em;
+        color: white;
+      }
+      video {
+        border-radius: 10px;
+        width: 700px;
+        max-width: 100%;
+      }
+    }
+  }
+</style>
+
+<title>Screen recorder</title>
+<link rel="icon" href="pngwing.com (3).png" />
+<body>
+  <section>
+    <button class="start">
+      <svg
+        fill="#000000"
+        version="1.1"
+        id="Capa_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 0 60 60"
+        xml:space="preserve"
+      >
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g
+          id="SVGRepo_tracerCarrier"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></g>
+        <g id="SVGRepo_iconCarrier">
+          <g>
+            <path
+              d="M45.563,29.174l-22-15c-0.307-0.208-0.703-0.231-1.031-0.058C22.205,14.289,22,14.629,22,15v30 c0,0.371,0.205,0.711,0.533,0.884C22.679,45.962,22.84,46,23,46c0.197,0,0.394-0.059,0.563-0.174l22-15 C45.836,30.64,46,30.331,46,30S45.836,29.36,45.563,29.174z M24,43.107V16.893L43.225,30L24,43.107z"
+            ></path>
+            <path
+              d="M30,0C13.458,0,0,13.458,0,30s13.458,30,30,30s30-13.458,30-30S46.542,0,30,0z M30,58C14.561,58,2,45.439,2,30 S14.561,2,30,2s28,12.561,28,28S45.439,58,30,58z"
+            ></path>
+          </g>
+        </g>
+      </svg>
+      Record Screen
+    </button>
+    <button class="end">Stop</button>
+  </section>
+  <section id="myVideos">
+    <h2>Mis videos</h2>
+  </section>
+</body>
+
+<script>
+  const $button = document.querySelector("button.start");
+  $button.addEventListener("click", async () => {
+    const media = await navigator.mediaDevices.getDisplayMedia({
+      video: {
+        frameRate: { ideal: 60 },
+        height: { ideal: 1080 },
+        width: { ideal: 1920 },
+      },
+    });
+    const mediarecorder = new MediaRecorder(media, {
+      mimeType: "video/webm;codecs=vp8,opus",
+    });
+    mediarecorder.start();
+
+    const [video] = media.getVideoTracks();
+    document.querySelector("button.end").addEventListener("click", () => {
+      video.stop();
+    });
+    video.addEventListener("ended", () => {
+      mediarecorder.stop();
+    });
+
+    mediarecorder.addEventListener("dataavailable", (e) => {
+      const $videosContainer = document.querySelector("#myVideos");
+      const videosPrev = $videosContainer.querySelectorAll("a").length;
+
+      const $link = document.createElement("a");
+      $link.href = URL.createObjectURL(e.data);
+      $link.download = `Captura${videosPrev + 1}.webm`;
+      $link.innerText = `Descargar video ${videosPrev + 1}`;
+
+      const $video = document.createElement("video");
+      $video.src = $link.href;
+      $video.controls = true;
+
+      const $card = document.createElement("article");
+      $card.classList.add("card");
+      $card.appendChild($video);
+      $card.appendChild($link);
+      $videosContainer.appendChild($card);
+    });
+  });
+</script>
